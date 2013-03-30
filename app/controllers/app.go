@@ -51,3 +51,10 @@ func (c Application) Api() revel.Result {
 
 	return c.Render()
 }
+
+func (c Application) ApiPost() revel.Result {
+	ret:= make(map[string]interface {})
+	ret["success"] = true
+	//log.Println( string(c.Request.Body))
+	return c.RenderJson(ret)
+}

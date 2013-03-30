@@ -68,3 +68,11 @@ func (qc QuestionController) GetAnswer(id int64,content string) revel.Result {
 	ret["answer"] = a
 	return qc.RenderJson(ret)
 }
+
+func (qc QuestionController) DeleteAnswer(id int64) revel.Result {
+	ret:=make(map[string]interface {})
+	ret["success"] = true
+	answerService.Delete(id)
+	return qc.RenderJson(ret)
+}
+

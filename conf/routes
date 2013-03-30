@@ -10,12 +10,13 @@ GET     /answer                                 Application.Answer
 
 
 GET     /api                                    Application.Api
-
+POST    /api                                    Application.ApiPost
 GET     /test/add                               TestController.Add
 
 
 GET     /question/add                           QuestionController.Add
 GET     /question/addanswer                     QuestionController.AddAnswer
+GET     /question/deleteanswer                  QuestionController.DeleteAnswer
 GET     /question/{id}                          QuestionController.Get
 GET     /question/get/{id}/{content}                QuestionController.GetAnswer
 #Login

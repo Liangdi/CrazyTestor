@@ -72,6 +72,13 @@ func (us *QuestionService) Find(testId int64) []models.Question{
 	return result
 }
 
+
+func (us *QuestionService) Delete(id int64){
+	us.c.Remove(bson.M{"id":id})
+	GetAnswerService().DeleteByQuestion(id)
+}
+
+
 func (us *QuestionService) Add(q *models.Question) {
 	us.mutex.Lock()
 	q.Id = GetIdsService().GetNext(us.coll)

@@ -36,6 +36,14 @@ func (us *AnswerService) Count() int {
 	return ret
 }
 
+func (us *AnswerService) Delete(id int64){
+	us.c.Remove(bson.M{"id":id})
+}
+
+func (us *AnswerService) DeleteByQuestion(questionId int64) {
+	us.c.Remove(bson.M{"questionid":questionId})
+}
+
 func (us *AnswerService) GetOne() *models.Answer {
 	result := &models.Answer{}
 	us.c.Find(nil).One(result)

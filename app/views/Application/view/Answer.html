@@ -106,7 +106,7 @@
 
         $("span[data-action=\"delete\"]").click(function(){
             var id = $(this).attr("data-id");
-            var url = "question?action=delete&id=" + id;
+            var url = "question/deleteanswer?id=" + id;
             $.ajax({
                 url:url,
                 success:function(data){
