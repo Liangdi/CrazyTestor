@@ -11,6 +11,7 @@ import (
 	"labix.org/v2/mgo"
 	"CrazyTestor/app/models"
 	"labix.org/v2/mgo/bson"
+	"log"
 )
 
 var (
@@ -50,8 +51,22 @@ func (us *QuestionService) GetAnswer(questionId int64, content string) *models.A
 	}
 
 	return nil
+}
 
+func (us *QuestionService) GetAnswerById(questionId,aid int64) *models.Answer {
+	question := &models.Question{}
+	answers := []models.Answer{}
+	us.c.Find(bson.M{"id": questionId}).One(question)
 
+	answers = GetAnswerService().Find(question.Id)
+	for i, answer:= range answers {
+		log.Println("aid:id",int(aid),i)
+		if(i == int(aid)-1) {
+			return &answer;
+		}
+	}
+
+	return nil
 }
 
 

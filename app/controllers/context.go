@@ -3,7 +3,7 @@ package controllers
 import (
 	"log"
 	"strconv"
-	//"CrazyTestor/app/models"
+	"CrazyTestor/app/models"
 )
 
 var (
@@ -53,36 +53,77 @@ func (c *Context) handle(s *Message) {
 	log.Println("handling:", data)
 	log.Println("handling Id:", (*c).QuesstionID)
 	if (*c).QuesstionID == 0  {
-		question, answers := questionService.Get(0)
 		//rsp := mashup question and answers
 		rsp := &Message{"ToUserName": (*s)["FromUserName"],
 			"FromUserName": (*s)["ToUserName"],
 			"CreateTime":   (*s)["CreateTime"],
-		//	"MsgId":        (*s)["MsgId"],
+			//	"MsgId":        (*s)["MsgId"],
 			"MsgType":      "text"}
-
-		(*rsp)["Content"] = question.Title; // + "\n" + answers[0].Content
-		for i,ans := range  answers {
-			(*rsp)["Content"] +="\n 答案"+strconv.Itoa(i+1)+":" + ans.Content
+		tid,err := strconv.ParseInt(data,10,32);
+		var t *models.Test;
+		ts := testService.Find()
+		if(err == nil){
+			log.Println("选择测试序列:",tid)
+			t = testService.Get(tid)
+			for i,tt := range ts{
+				if(i == int(tid)-1){
+					t = &tt
+					break
+				}
+			}
 		}
-		log.Println("start test", rsp)
-		(*c).QuesstionID = question.Id
-		(*c).testId = question.TestId
+
+		if(t == nil){
+
+			(*rsp)["Content"] ="请选择测试列表:";
+			for i,t := range ts{
+				(*rsp)["Content"] +="\n"+strconv.Itoa(i+1)+" :" + t.Title
+			}
+		} else {
+			list:=questionService.Find(t.Id);
+			var content = "";
+			if(len(list) >0){
+				content = "您选择了 测试\""+t.Title + "\",问题如下\n";
+
+				question, answers := questionService.Get(list[0].Id)
+				content +=  question.Title
+				for i,ans := range  answers {
+					content +="\n 答案"+strconv.Itoa(i+1)+":" + ans.Content
+				}
+				(*c).QuesstionID = question.Id
+				(*c).testId = question.TestId
+			} else {
+				content = "找不到相关的测试问题.";
+			}
+
+
+			(*rsp)["Content"] = content
+
+			log.Println("start test", rsp)
+
+
+		}
 		cmgr.out <- rsp
 		
 
-		log.Print(question.Id)
+
 		return
 	}
 	log.Println("get AnswerByContent")
-	/*aid,err := strconv.ParseInt(data,10,32);
-	if(!err){
-
-	} */
+	aid,err := strconv.ParseInt(data,10,32);
+	answer := &models.Answer{}
+    log.Println("err:",err)
+	if(err == nil){  //序号回答问题
+		log.Println("序号:",aid);
+		answer = questionService.GetAnswerById((*c).QuesstionID, aid)
+	}else{
+		log.Println("文本查找:",data);
+		answer = questionService.GetAnswer((*c).QuesstionID, data)
+	}
 	qid := strconv.Itoa(int((*c).QuesstionID));
 	log.Println("question id ",qid)
 	//amswer := getAnswer(pid, data)
-	answer := questionService.GetAnswer((*c).QuesstionID, data)
+
 	rsp := &Message{"ToUserName": (*s)["FromUserName"],
 		"FromUserName": (*s)["ToUserName"],
 		"CreateTime":   (*s)["CreateTime"],
@@ -96,7 +137,7 @@ func (c *Context) handle(s *Message) {
 	}
 	log.Println("next id:" ,answer.NextQuestionId)
 	if(answer.NextQuestionId == 0) {
-		(*rsp)["Content"] = answer.Result
+		(*rsp)["Content"] = "测试完成\n测试结果:"+answer.Result
 		log.Println("Content:",(*rsp)["Content"] )
 		(*c).QuesstionID = 0
 		log.Println("next answer", rsp)
