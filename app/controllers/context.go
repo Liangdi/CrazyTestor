@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"log"
-	//"strconv"
+	"strconv"
 	//"CrazyTestor/app/models"
 )
 
@@ -50,7 +50,7 @@ func (c *Context) sameSession(s *Message) bool {
 func (c *Context) handle(s *Message) {
 	data := (*s)["Content"]
 	log.Println("handling:", data)
-
+	log.Println("handling Id:", (*c).QuesstionID)
 	if (*c).QuesstionID == 0  {
 		question, answers := questionService.Get(0)
 		//rsp := mashup question and answers
@@ -59,15 +59,20 @@ func (c *Context) handle(s *Message) {
 			"CreateTime":   (*s)["CreateTime"],
 		//	"MsgId":        (*s)["MsgId"],
 			"MsgType":      "text"}
-		(*rsp)["Content"] = question.Title + "\n" + answers[0].Content 
 
+		(*rsp)["Content"] = question.Title; // + "\n" + answers[0].Content
+		for i,ans := range  answers {
+			(*rsp)["Content"] +="\n 答案"+strconv.Itoa(i+1)+":" + ans.Content
+		}
 		log.Println("start test", rsp)
+		(*c).QuesstionID = question.Id
 		cmgr.out <- rsp
 		
-		(*c).QuesstionID = question.Id
+
+		log.Print(question.Id)
 		return
 	}
-
+	log.Println("get AnswerByContent")
 	//amswer := getAnswer(pid, data)
 	answer := questionService.GetAnswer((*c).QuesstionID, data)
 	rsp := &Message{"ToUserName": (*s)["FromUserName"],
@@ -75,13 +80,27 @@ func (c *Context) handle(s *Message) {
 		"CreateTime":   (*s)["CreateTime"],
 	//	"MsgId":        (*s)["MsgId"],
 		"MsgType":      "text"}
-	question, answers := questionService.Get(answer.NextQuestionId)
-	(*rsp)["Content"] = question.Title + "\n" + answers[0].Content
+	log.Println("next id:" ,answer.NextQuestionId)
+	if(answer.NextQuestionId == 0) {
+		(*rsp)["Content"] = answer.Result
+		log.Println("Content:",(*rsp)["Content"] )
+		(*c).QuesstionID = 0
+		log.Println("next answer", rsp)
+		cmgr.out <- rsp
+	}  else {
+		question, answers := questionService.Get(answer.NextQuestionId)
+		(*rsp)["Content"] = question.Title;// + "\n" + answers[0].Content
+		for i,ans := range  answers {
+			(*rsp)["Content"] +="\n 答案"+strconv.Itoa(i+1)+":" + ans.Content
+		}
+		(*c).QuesstionID = question.Id
+		log.Println("next answer", rsp)
+		cmgr.out <- rsp
+	}
 
-	log.Println("next answer", rsp)
-	cmgr.out <- rsp
 
-	(*c).QuesstionID = question.Id
+
+
 	return
 }
 

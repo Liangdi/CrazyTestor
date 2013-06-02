@@ -19,9 +19,13 @@ _cgo_export.*
 
 _testmain.go
 
+<<<<<<< HEAD
 .idea
 *.iml
 *.exe
 
 # revel
 app/tmp/
+=======
+*.exe
+>>>>>>> bda68348cf74dce2b9f66cb596912b708573bf7a
