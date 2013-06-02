@@ -1,4 +1,4 @@
-package main
+package controllers
 //package controllers
 
 import (
@@ -76,13 +76,13 @@ func GetResult(user_id string, test_suit_id int) string{
 }
 
 
-func main (){
-   //new data 
-   var m map[int]string
-
-   m = make(map[int]string)
-   m[101] = "first answer"
-   m[102] = "second answer"
-   
-   fmt.Println(GetResult("asdf", 1))
-}
+//func main (){
+//   //new data 
+//   var m map[int]string
+//
+//   m = make(map[int]string)
+//   m[101] = "first answer"
+//   m[102] = "second answer"
+//   
+//   fmt.Println(GetResult("asdf", 1))
+//}
