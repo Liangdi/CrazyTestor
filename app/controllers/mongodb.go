@@ -24,6 +24,7 @@ var (
 	testService *services.TestService
 	questionService *services.QuestionService
 	answerService *services.AnswerService
+	statistics *services.StatisticsService
 
 )
 
@@ -63,10 +64,12 @@ func (p MongodbPlugin) OnAppStart() {
 	services.InitTestService(session,db)
 	services.InitQuestionService(session,db)
 	services.InitAnswerService(session,db)
+	services.InitStatisticsService(session,db)
 	//userService = services.GetUserService()
 	idsService = services.GetIdsService()
 	testService = services.GetTestService()
 	questionService = services.GetQuestionService()
 	answerService = services.GetAnswerService()
+	statistics = services.GetStatisticsService()
 }
 
