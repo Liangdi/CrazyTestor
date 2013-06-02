@@ -63,6 +63,13 @@ func (us *StatisticsService) Find(questionId int64) []models.Statistics{
 	return result
 }
 
+func (us *StatisticsService) FindAnswer(userId string, suitId int64) map[int64]string{
+	ret := make(map[int64]string)
+	us.c.Find(bson.M{"userId":userId, "suitId":suitId}).Select(bson.M{"questionId":1, "content":2}).All(&ret)	
+				
+	return ret
+}
+
 func InitStatisticsService(session *mgo.Session, db *mgo.Database) {
 	if _statisticsServiceInstance == nil {
 		_statisticsServiceInstance = &StatisticsService{}
