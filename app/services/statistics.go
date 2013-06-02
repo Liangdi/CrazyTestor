@@ -44,8 +44,8 @@ func (us *StatisticsService) DeleteByQuestion(questionId int64) {
 	us.c.Remove(bson.M{"questionid":questionId})
 }
 
-func (us *StatisticsService) GetOne() *models.Answer {
-	result := &models.Answer{}
+func (us *StatisticsService) GetOne() *models.Statistics {
+	result := &models.Statistics{}
 	us.c.Find(nil).One(result)
 	return result
 }
@@ -57,7 +57,7 @@ func (us *StatisticsService) Add(s *models.Statistics) {
 	us.mutex.Unlock()
 }
 
-func (us *StatisticsService) Find(questionId int64) []models.Answer{
+func (us *StatisticsService) Find(questionId int64) []models.Statistics{
 	result :=[]models.Statistics{}
 	//us.c.Find(bson.M{"questionid": questionId}).All(&result)
 	return result
@@ -65,7 +65,7 @@ func (us *StatisticsService) Find(questionId int64) []models.Answer{
 
 func InitStatisticsService(session *mgo.Session, db *mgo.Database) {
 	if _statisticsServiceInstance == nil {
-		_statisticsServiceInstance = &AnswerService{}
+		_statisticsServiceInstance = &StatisticsService{}
 		_statisticsServiceInstance.Init(session, db, STATISTICS_COLLECTION)
 	}
 }
