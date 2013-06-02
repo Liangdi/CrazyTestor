@@ -57,6 +57,11 @@ func receiveHandler(w http.ResponseWriter, req *http.Request){
 //	fmt.Println("after parse:" , parsedMap)
 	
 	// deal output
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "text/xml")
+	//<add name="Access-Control-Allow-Headers" value="Origin, X-Requested-With, Content-Type, Accept" />
+	//'Access-Control-Allow-Origin: *'
 	xmlStr:= ToXML(output)
 	fmt.Fprint(w, xmlStr)
 }
