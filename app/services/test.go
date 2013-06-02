@@ -9,7 +9,8 @@ package services
 
 import (
 	"labix.org/v2/mgo"
-	"strconv"
+	"labix.org/v2/mgo/bson"
+	//"strconv"
 	"CrazyTestor/app/models"
 )
 
@@ -25,8 +26,14 @@ type TestService struct {
 	MongodbService
 }
 
-func (us *TestService) Get(id int64) string {
-	return "test:" + strconv.Itoa(int(id))
+func (us *TestService) Get(id int64) *models.Test {
+	test:=&models.Test{}
+	if(id == 0){
+		test = us.GetOne()
+	} else {
+		us.c.Find(bson.M{"id":id}).One(test)
+	}
+	return test
 }
 
 func (us *TestService) Count() int {
