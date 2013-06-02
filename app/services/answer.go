@@ -60,7 +60,7 @@ func (us *AnswerService) Add(answer *models.Answer) {
 func (us *AnswerService) Find(questionId int64) []models.Answer{
 	result :=[]models.Answer{}
 	us.c.Find(bson.M{"questionid": questionId}).All(&result)
-return result
+	return result
 }
 
 func InitAnswerService(session *mgo.Session, db *mgo.Database) {

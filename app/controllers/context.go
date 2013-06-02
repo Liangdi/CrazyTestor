@@ -21,6 +21,7 @@ type Context struct {
 	Content      string
 	MsgId        int64
 	QuesstionID  int64
+	testId		 int64
 }
 
 func NewContext(s *Message) *Context {
@@ -66,6 +67,7 @@ func (c *Context) handle(s *Message) {
 		}
 		log.Println("start test", rsp)
 		(*c).QuesstionID = question.Id
+		(*c).testId = question.TestId
 		cmgr.out <- rsp
 		
 
@@ -73,6 +75,12 @@ func (c *Context) handle(s *Message) {
 		return
 	}
 	log.Println("get AnswerByContent")
+	/*aid,err := strconv.ParseInt(data,10,32);
+	if(!err){
+
+	} */
+	qid := strconv.Itoa(int((*c).QuesstionID));
+	log.Println("question id ",qid)
 	//amswer := getAnswer(pid, data)
 	answer := questionService.GetAnswer((*c).QuesstionID, data)
 	rsp := &Message{"ToUserName": (*s)["FromUserName"],
@@ -80,6 +88,12 @@ func (c *Context) handle(s *Message) {
 		"CreateTime":   (*s)["CreateTime"],
 	//	"MsgId":        (*s)["MsgId"],
 		"MsgType":      "text"}
+	if(answer == nil){
+
+		(*rsp)["Content"] = "系统错误,找不到响应的问题:"  + qid//+ (*c).QuesstionID;
+		cmgr.out <- rsp
+		return;
+	}
 	log.Println("next id:" ,answer.NextQuestionId)
 	if(answer.NextQuestionId == 0) {
 		(*rsp)["Content"] = answer.Result
@@ -134,18 +148,20 @@ func RunContextMgr() {
 				var k *Context
 				for i, k = range cmgr.ctxs {
 					if k != nil && k.sameSession(s) {
-						log.Println("Message Exit")
+						log.Println("Message Exists")
 						go k.handle(s)
 						goto NEXT
 					}
 				}
-				log.Println("Message not Exit", i)
+				log.Println("Message not Exists", i)
 				for i, k = range cmgr.ctxs {
 					if k == nil {
 						cmgr.ctxs[i] = NewContext(s)
 						go cmgr.ctxs[i].handle(s)
+						goto NEXT
 					} else {
-						panic("Out of slice len")
+						continue;
+						//panic("Out of slice len")
 					}
 				}
 			}
