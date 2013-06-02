@@ -23,7 +23,8 @@ func FindAnswer(test_suit_id int) []R{
 
      q1 := Q{101, "answer 1"}
      q2 := Q{102, "answer 2"}
-     r := []R{{"hadwinzhy",[]Q{q1,q2}}, {"girl", []Q{q2,q1}}}
+     q3 := Q{102, "answer 3"}
+     r := []R{{"hadwinzhy",[]Q{q1,q3}}, {"girl", []Q{q2,q1}}}
      return r
 }
 
@@ -40,21 +41,28 @@ func GetBestFitUser(current_user_id string, test_suit_id int) bool{
      }
      fmt.Println( girl)
      fmt.Println("----------------")
+
+     is_same := true
      for _, b:= range all{
      	 if b.user_id == best_girl_id{
 	    continue	    
 	 }
 	 for _, boyQuestion:= range b.questions{
-	     girl_answer
-	     if boyQuestion.answer  != girl.questions[boyQuestion.question_id]{
-	     	     fmt.Println(boyQuestion.answer)
-             }
-	 }
+	     
+	     for _,girlQuestion:= range girl.questions{
+	     	 if(girlQuestion.question_id == boyQuestion.question_id){
+		        if girlQuestion.answer != boyQuestion.answer{
+			   fmt.Println("girl" + girlQuestion.answer)
+			   is_same =false
+		    }
+		 }	 
+	     }
 
+	 }
      }
 
      fmt.Println("----------------")
-     return false
+     return is_same
 }
 
 
